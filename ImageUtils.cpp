@@ -27,18 +27,19 @@ Image ImageUtils::normalize(Image image) {
 std::vector<IntrestingPoint> ImageUtils::ANMS(std::vector<IntrestingPoint> points, int pointsCount){
     printf("ANMS Start\n");
     int currentRadius = 1;
-    do{
+    while(points.size() > pointsCount) {
         for(int x = 0; x < points.size(); x++){
             for(int y = 0; y < points.size(); y++){
                 //double currentDistance = sqrt(pow((points.at(x).getX() - points.at(y).getX()),2) + pow((points.at(x).getY() - points.at(y).getY()),2));
                 if(x == y) continue;
-                if( points.at(x).getDistance(points.at(y)) < currentRadius && points.at(x).getValue() < points.at(y).getValue() ) {
+                if( points.at(x).getDistance(points.at(y)) < currentRadius && points.at(x).getValue() > points.at(y).getValue()) {
                     points.erase(points.begin() + x);
+                    break;
                 }
             }
         }
         currentRadius++;
-    }while(points.size() > pointsCount);
+    }
     printf("ANMS End\n");
     return points;
 }

@@ -157,7 +157,7 @@ std::vector<IntrestingPoint> DescriptorConstructor::orientPoints(std::vector<Int
         firstPoint.setAngle((double)firstMaxValueIndex * localBinSize);
         orientPoints.push_back(firstPoint);
 
-        printf("IP MAX FIRST %d\n", firstMaxValueIndex);
+//        printf("IP MAX FIRST %d\n", firstMaxValueIndex);
 
 
         //если вторая >= 0.8 от первой, то добваляем то же
@@ -165,7 +165,7 @@ std::vector<IntrestingPoint> DescriptorConstructor::orientPoints(std::vector<Int
             IntrestingPoint secondPoint(inputPoints.at(index));
             secondPoint.setAngle((double)secondMaxValueIndex * localBinSize);
             orientPoints.push_back(secondPoint);
-            printf("IP MAX SECOND %d\n", secondMaxValueIndex);
+//            printf("IP MAX SECOND %d\n", secondMaxValueIndex);
         }
     }
     return orientPoints;

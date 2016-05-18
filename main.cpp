@@ -89,43 +89,39 @@ void lab4() {
 
     //Поиск
     for(int i = 0; i < descriptors1.size(); i++){
-        double minDist1 = descriptors1.at(i).getDistance(descriptors2.at(0));
-        int minIndex1 = 0;
-        double minDist2 = descriptors1.at(i).getDistance(descriptors2.at(1));
-        int minIndex2 = 1;
+        double firstMinValue = 10000;
+        int firstMinValueIndex = 10000;
+        double secondMinValue = 10000;
+        int secondMinValueIndex = 10000;
 
-        if(minDist1 > minDist2){
-            std::swap(minDist1, minDist2);
-            std::swap(minIndex1, minIndex2);
-        }
-
-        for(int j = 2; j < descriptors2.size(); j++){
-
+        for(int j = 0; j < descriptors2.size(); j++){
             double dist = descriptors1.at(i).getDistance(descriptors2.at(j));
+            if(dist < firstMinValue){
+                secondMinValue = firstMinValue;
+                secondMinValueIndex = firstMinValueIndex;
 
-            if(dist < minDist2){
-                minDist2 = dist;
-                minIndex2 = j;
-            }
-
-            if(dist < minDist1){
-                std::swap(minDist1, minDist2);
-                std::swap(minIndex1, minIndex2);
+                firstMinValue = dist;
+                firstMinValueIndex = j;
+            } else {
+                if(dist < secondMinValue){
+                    secondMinValue = dist;
+                    secondMinValueIndex = j;
+                }
             }
         }
 
-        if(minDist1 / minDist2 < 0.8){
+        if(firstMinValue / secondMinValue < 0.8){
             QPen pen(QColor(rand()%255 ,rand()%255, rand()%255));
             painter.setPen(pen);
 
             painter.drawRect(img1.getPoints().at(i).getX() - 5, img1.getPoints().at(i).getY() - 5, 10, 10);
             painter.drawRect(img1.getPoints().at(i).getX() - 4, img1.getPoints().at(i).getY() - 4, 8, 8);
 
-            painter.drawRect(img2.getPoints().at(minIndex1).getX() - 5 + qIamqe1.width(), img2.getPoints().at(minIndex1).getY() - 5, 10, 10);
-            painter.drawRect(img2.getPoints().at(minIndex1).getX() - 4 + qIamqe1.width(), img2.getPoints().at(minIndex1).getY() - 4, 8, 8);
+            painter.drawRect(img2.getPoints().at(firstMinValueIndex).getX() - 5 + qIamqe1.width(), img2.getPoints().at(firstMinValueIndex).getY() - 5, 10, 10);
+            painter.drawRect(img2.getPoints().at(firstMinValueIndex).getX() - 4 + qIamqe1.width(), img2.getPoints().at(firstMinValueIndex).getY() - 4, 8, 8);
 
 
-            painter.drawLine(QPoint(descriptors1.at(i).getIntrestingPoint().getX(),descriptors1.at(i).getIntrestingPoint().getY()),QPoint(descriptors2.at(minIndex1).getIntrestingPoint().getX() + qIamqe1.width(),descriptors2.at(minIndex1).getIntrestingPoint().getY()));
+            painter.drawLine(QPoint(descriptors1.at(i).getIntrestingPoint().getX(),descriptors1.at(i).getIntrestingPoint().getY()),QPoint(descriptors2.at(firstMinValueIndex).getIntrestingPoint().getX() + qIamqe1.width(),descriptors2.at(firstMinValueIndex).getIntrestingPoint().getY()));
         }
     }
 
@@ -140,7 +136,7 @@ void lab4() {
 void lab5() {
     Image img1("D:\\KazakovImages\\input\\k1.jpg");
     img1.haris(4);
-    img1.setPoints(ImageUtils::ANMS(img1.getPoints(), 200));
+    img1.setPoints(ImageUtils::ANMS(img1.getPoints(), 500));
     DescriptorConstructor constructor1(img1);
     img1.setPoints(constructor1.orientPoints(img1.getPoints()));
     std::vector<Descriptor> descriptors1;
@@ -149,9 +145,9 @@ void lab5() {
         descriptors1.push_back(constructor1.createDescriptor(img1.getPoints().at(i)));
     }
 
-    Image img2("D:\\KazakovImages\\input\\k1_90.jpg");
+    Image img2("D:\\KazakovImages\\input\\k1_180.jpg");
     img2.haris(4);
-    img2.setPoints(ImageUtils::ANMS(img2.getPoints(), 200));
+    img2.setPoints(ImageUtils::ANMS(img2.getPoints(), 500));
     DescriptorConstructor constructor2(img2);
     img2.setPoints(constructor2.orientPoints(img2.getPoints()));
     std::vector<Descriptor> descriptors2;
@@ -159,7 +155,7 @@ void lab5() {
         descriptors2.push_back(constructor2.createDescriptor(img2.getPoints().at(i)));
     }
 
-    printf("\nEXIT");
+    printf("Find process...\n");
 
 
     QImage qIamqe1 = img1.getInputImage();
@@ -203,33 +199,31 @@ void lab5() {
     }
 
     //Поиск
+    int findCount = 0;
     for(int i = 0; i < descriptors1.size(); i++){
-        double minDist1 = descriptors1.at(i).getDistance(descriptors2.at(0));
-        int minIndex1 = 0;
-        double minDist2 = descriptors1.at(i).getDistance(descriptors2.at(1));
-        int minIndex2 = 1;
+        double firstMinValue = 10000;
+        int firstMinValueIndex = 10000;
+        double secondMinValue = 10000;
+        int secondMinValueIndex = 10000;
 
-        if(minDist1 > minDist2){
-            std::swap(minDist1, minDist2);
-            std::swap(minIndex1, minIndex2);
-        }
-
-        for(int j = 2; j < descriptors2.size(); j++){
-
+        for(int j = 0; j < descriptors2.size(); j++){
             double dist = descriptors1.at(i).getDistance(descriptors2.at(j));
+            if(dist < firstMinValue){
+                secondMinValue = firstMinValue;
+                secondMinValueIndex = firstMinValueIndex;
 
-            if(dist < minDist2){
-                minDist2 = dist;
-                minIndex2 = j;
-            }
-
-            if(dist < minDist1){
-                std::swap(minDist1, minDist2);
-                std::swap(minIndex1, minIndex2);
+                firstMinValue = dist;
+                firstMinValueIndex = j;
+            } else {
+                if(dist < secondMinValue){
+                    secondMinValue = dist;
+                    secondMinValueIndex = j;
+                }
             }
         }
 
-        if(minDist1 / minDist2 < 0.8){
+        if(firstMinValue / secondMinValue < 0.8){
+            findCount++;
             QPen pen(QColor(rand()%255 ,rand()%255, rand()%255));
             painter.setPen(pen);
 
@@ -241,26 +235,27 @@ void lab5() {
                         img1.getPoints().at(i).getX() + (15 * cos(img1.getPoints().at(i).getAngle() * M_PI / 180.0)),
                         img1.getPoints().at(i).getY() + (15 * sin(img1.getPoints().at(i).getAngle() * M_PI / 180.0)) );
 
-            painter.drawEllipse(img2.getPoints().at(i).getX() - 8 + qIamqe1.width(), img2.getPoints().at(i).getY() - 8, 16, 16);
-            painter.drawEllipse(img2.getPoints().at(i).getX() - 7 + qIamqe1.width(), img2.getPoints().at(i).getY() - 7, 14, 14);
+            painter.drawEllipse(img2.getPoints().at(firstMinValueIndex).getX() - 8 + qIamqe1.width(), img2.getPoints().at(firstMinValueIndex).getY() - 8, 16, 16);
+            painter.drawEllipse(img2.getPoints().at(firstMinValueIndex).getX() - 7 + qIamqe1.width(), img2.getPoints().at(firstMinValueIndex).getY() - 7, 14, 14);
             painter.drawLine(
-                        img2.getPoints().at(i).getX() + qIamqe1.width(),
-                        img2.getPoints().at(i).getY(),
-                        img2.getPoints().at(i).getX() + (15 * cos(img2.getPoints().at(i).getAngle() * M_PI / 180.0)) + qIamqe1.width(),
-                        img2.getPoints().at(i).getY() + (15 * sin(img2.getPoints().at(i).getAngle() * M_PI / 180.0)) );
+                        img2.getPoints().at(firstMinValueIndex).getX() + qIamqe1.width(),
+                        img2.getPoints().at(firstMinValueIndex).getY(),
+                        img2.getPoints().at(firstMinValueIndex).getX() + (15 * cos(img2.getPoints().at(firstMinValueIndex).getAngle() * M_PI / 180.0)) + qIamqe1.width(),
+                        img2.getPoints().at(firstMinValueIndex).getY() + (15 * sin(img2.getPoints().at(firstMinValueIndex).getAngle() * M_PI / 180.0)) );
 
             painter.drawLine(
                         QPoint(descriptors1.at(i).getIntrestingPoint().getX(),
                                descriptors1.at(i).getIntrestingPoint().getY()),
-                        QPoint(descriptors2.at(minIndex1).getIntrestingPoint().getX() + qIamqe1.width(),
-                               descriptors2.at(minIndex1).getIntrestingPoint().getY()));
+                        QPoint(descriptors2.at(firstMinValueIndex).getIntrestingPoint().getX() + qIamqe1.width(),
+                               descriptors2.at(firstMinValueIndex).getIntrestingPoint().getY()));
         }
     }
 
     painter.end();
-
+    double percent = (((double) findCount / ((descriptors1.size() + descriptors2.size())/2))*100);
+    printf("FINDED DESCRIPTORS: %lf percent\n", percent);
     image.save("D:\\result.jpg");
-     printf("\nEXIT");
+     printf("EXIT\n");
 
 
 }
