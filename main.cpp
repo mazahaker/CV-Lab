@@ -133,7 +133,7 @@ void lab4() {
 }
 
 void lab5() {
-    Image img1("D:\\KazakovImages\\input\\k1.jpg");
+    Image img1("D:\\KazakovImages\\input\\q1.png");
     img1.haris(4);
     img1.setPoints(ImageUtils::ANMS(img1.getPoints(), 120));
     DescriptorConstructor constructor1(img1);
@@ -144,7 +144,7 @@ void lab5() {
         descriptors1.push_back(constructor1.createDescriptor(img1.getPoints().at(i)));
     }
 
-    Image img2("D:\\KazakovImages\\input\\k1_90.jpg");
+    Image img2("D:\\KazakovImages\\input\\q1_180.png");
     img2.haris(4);
     img2.setPoints(ImageUtils::ANMS(img2.getPoints(), 120));
     DescriptorConstructor constructor2(img2);

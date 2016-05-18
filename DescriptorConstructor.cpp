@@ -34,14 +34,14 @@ Descriptor DescriptorConstructor::createDescriptor(const IntrestingPoint inputPo
             if(ImageUtils::getDistance((double)angledX,0.0,(double)angledY,0.0) < sqrt(pow(descriptorRadius,2) + pow(descriptorRadius,2))){
 
                 //За границей?
-                if(angledX < -descriptorRadius) { angledX = 0; }
-                else { if(angledX >= descriptorRadius) { angledX = descriptorRadius -1; }
-                    else { angledX += descriptorRadius; }}
-
-                if(angledY < -descriptorRadius) { angledY = 0; }
-                else { if(angledY >= descriptorRadius) { angledY = descriptorRadius -1; }
-                    else { angledY += descriptorRadius; }}
-
+//                if(angledX < -descriptorRadius) { angledX = 0; }
+//                else { if(angledX >= descriptorRadius) { angledX = descriptorRadius -1; }
+//                    else { angledX += descriptorRadius; }}
+angledX += descriptorRadius;
+//                if(angledY < -descriptorRadius) { angledY = 0; }
+//                else { if(angledY >= descriptorRadius) { angledY = descriptorRadius -1; }
+//                    else { angledY += descriptorRadius; }}
+angledY += descriptorRadius;
                 //Направление Фи
                 double localPfi =  directionFi.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) - inputPoint.getAngle();
 
@@ -96,7 +96,7 @@ std::vector<IntrestingPoint> DescriptorConstructor::orientPoints(std::vector<Int
             for(int j = -radius; j < radius; j++){
 
                 //В пределах ?
-                if(ImageUtils::getDistance((double)i,0.0,(double)j,0.0) < sqrt(pow(radius,2))){
+                if(ImageUtils::getDistance((double)i,0.0,(double)j,0.0) < sqrt(pow(radius,2) + pow(radius,2))){
 
                     //Направление Фи
                     double localPfi =  directionFi.getPixel(inputPoints.at(index).getX() + i, inputPoints.at(index).getY() + j);
