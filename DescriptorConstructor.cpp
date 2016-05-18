@@ -7,12 +7,21 @@ DescriptorConstructor::DescriptorConstructor(Image& inputImage)
     directionFi.copy(inputImage);
     Image sobelXImage(inputImage.convolution(&sobelX[0][0], 3, 3));
     Image sobelYImage(inputImage.convolution(&sobelY[0][0], 3, 3));
+//    int t = rand()%255;
+//    sobelXImage.saveImage("D:\\KazakovImages\\output\\" + QString::number(t) + "descSobelX.jpg", "desc sobelX saved");
+//    sobelYImage.saveImage("D:\\KazakovImages\\output\\" + QString::number(t) + "descSobelY.jpg", "desc sobelY saved");
 
     for(int x = 0; x < inputImage.getWidth(); x++){
         for(int y = 0; y < inputImage.getHeight(); y++){
             directionFi.setPixel(x,y, atan2(sobelYImage.getPixel(x,y), sobelXImage.getPixel(x,y)) * 180.0 / M_PI + 180.0);
         }
     }
+//    for(int x = 0; x < inputImage.getWidth(); x++){
+//        for(int y = 0; y < inputImage.getHeight(); y++){
+//            printf("%lf\n", directionFi.getPixel(x,y));
+//        }
+//    }
+    printf("Desc created\n");
 }
 
 Descriptor DescriptorConstructor::createDescriptor(const IntrestingPoint inputPoint) {
@@ -34,14 +43,14 @@ Descriptor DescriptorConstructor::createDescriptor(const IntrestingPoint inputPo
             if(ImageUtils::getDistance((double)angledX,0.0,(double)angledY,0.0) < sqrt(pow(descriptorRadius,2) + pow(descriptorRadius,2))){
 
                 //За границей?
-//                if(angledX < -descriptorRadius) { angledX = 0; }
-//                else { if(angledX >= descriptorRadius) { angledX = descriptorRadius -1; }
-//                    else { angledX += descriptorRadius; }}
-angledX += descriptorRadius;
-//                if(angledY < -descriptorRadius) { angledY = 0; }
-//                else { if(angledY >= descriptorRadius) { angledY = descriptorRadius -1; }
-//                    else { angledY += descriptorRadius; }}
-angledY += descriptorRadius;
+                if(angledX < -descriptorRadius) { angledX = 0; }
+                else { if(angledX >= descriptorRadius) { angledX = descriptorRadius -1; }
+                    else { angledX += descriptorRadius; }}
+//angledX += descriptorRadius;
+                if(angledY < -descriptorRadius) { angledY = 0; }
+                else { if(angledY >= descriptorRadius) { angledY = descriptorRadius -1; }
+                    else { angledY += descriptorRadius; }}
+//angledY += descriptorRadius;
                 //Направление Фи
                 double localPfi =  directionFi.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) - inputPoint.getAngle();
 
@@ -85,9 +94,9 @@ std::vector<IntrestingPoint> DescriptorConstructor::orientPoints(std::vector<Int
     std::vector<IntrestingPoint> orientPoints;
 
     for(int index = 0; index < inputPoints.size(); index++) {
-        const int localBinCount = 36;
+        const int localBinCount = 72;
         double localBinSize = 360.0 / localBinCount;
-        double radius = 8.0;
+        int radius = 8;
 
         double localBin[localBinCount];
         std::fill(std::begin (localBin), std::end (localBin), 0);
@@ -128,7 +137,7 @@ std::vector<IntrestingPoint> DescriptorConstructor::orientPoints(std::vector<Int
         int secondMaxValueIndex = -1;
 
         //Нашли первую и вторую максимальную
-        for(int i = 0; i < localBinSize; i++){
+        for(int i = 0; i < localBinCount; i++){
             if(localBin[i] > firstMaxValue){
                 secondMaxValue = firstMaxValue;
                 secondMaxValueIndex = firstMaxValueIndex;
@@ -148,12 +157,15 @@ std::vector<IntrestingPoint> DescriptorConstructor::orientPoints(std::vector<Int
         firstPoint.setAngle((double)firstMaxValueIndex * localBinSize);
         orientPoints.push_back(firstPoint);
 
+        printf("IP MAX FIRST %d\n", firstMaxValueIndex);
+
 
         //если вторая >= 0.8 от первой, то добваляем то же
         if(secondMaxValue >= (firstMaxValue * 0.8)) {
             IntrestingPoint secondPoint(inputPoints.at(index));
             secondPoint.setAngle((double)secondMaxValueIndex * localBinSize);
             orientPoints.push_back(secondPoint);
+            printf("IP MAX SECOND %d\n", secondMaxValueIndex);
         }
     }
     return orientPoints;

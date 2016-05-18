@@ -25,6 +25,7 @@ Image ImageUtils::normalize(Image image) {
 }
 
 std::vector<IntrestingPoint> ImageUtils::ANMS(std::vector<IntrestingPoint> points, int pointsCount){
+    printf("ANMS Start\n");
     int currentRadius = 1;
     do{
         for(int x = 0; x < points.size(); x++){
@@ -38,6 +39,7 @@ std::vector<IntrestingPoint> ImageUtils::ANMS(std::vector<IntrestingPoint> point
         }
         currentRadius++;
     }while(points.size() > pointsCount);
+    printf("ANMS End\n");
     return points;
 }
 

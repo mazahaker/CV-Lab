@@ -1,7 +1,12 @@
-#include <QCoreApplication>
+//#include <QCoreApplication>
+#include <QApplication>
 #include "Image.h"
 #include "ImageUtils.h"
 #include "DescriptorConstructor.h"
+
+#include <QPixmap>
+#include <QPainter>
+#include <QTextDocument>
 
 
 #include "Pyramid.h"
@@ -133,9 +138,9 @@ void lab4() {
 }
 
 void lab5() {
-    Image img1("D:\\KazakovImages\\input\\q1.png");
+    Image img1("D:\\KazakovImages\\input\\k1.jpg");
     img1.haris(4);
-    img1.setPoints(ImageUtils::ANMS(img1.getPoints(), 120));
+    img1.setPoints(ImageUtils::ANMS(img1.getPoints(), 200));
     DescriptorConstructor constructor1(img1);
     img1.setPoints(constructor1.orientPoints(img1.getPoints()));
     std::vector<Descriptor> descriptors1;
@@ -144,9 +149,9 @@ void lab5() {
         descriptors1.push_back(constructor1.createDescriptor(img1.getPoints().at(i)));
     }
 
-    Image img2("D:\\KazakovImages\\input\\q1_180.png");
+    Image img2("D:\\KazakovImages\\input\\k1_90.jpg");
     img2.haris(4);
-    img2.setPoints(ImageUtils::ANMS(img2.getPoints(), 120));
+    img2.setPoints(ImageUtils::ANMS(img2.getPoints(), 200));
     DescriptorConstructor constructor2(img2);
     img2.setPoints(constructor2.orientPoints(img2.getPoints()));
     std::vector<Descriptor> descriptors2;
@@ -164,6 +169,12 @@ void lab5() {
 
     QPainter painter;
     painter.begin(&image);
+
+    QFont font = QApplication::font();
+    font.setPixelSize(10);
+    font.setBold(false);
+    painter.setFont( font );
+
     painter.drawImage(QPoint(0,0), qIamqe1);
     painter.drawImage(QPoint(qIamqe1.width(),0), qIamqe2);
 
@@ -176,6 +187,7 @@ void lab5() {
                     img1.getPoints().at(i).getY(),
                     img1.getPoints().at(i).getX() + (15 * cos(img1.getPoints().at(i).getAngle() * M_PI / 180.0)),
                     img1.getPoints().at(i).getY() + (15 * sin(img1.getPoints().at(i).getAngle() * M_PI / 180.0)) );
+        //painter.drawText(img1.getPoints().at(i).getX(), img1.getPoints().at(i).getY() + 15, QString::number(img1.getPoints().at(i).getAngle()));
     }
 
     for(int i = 0; i < img2.getPoints().size(); i++){
@@ -187,6 +199,7 @@ void lab5() {
                     img2.getPoints().at(i).getY(),
                     img2.getPoints().at(i).getX() + (15 * cos(img2.getPoints().at(i).getAngle() * M_PI / 180.0)) + qIamqe1.width(),
                     img2.getPoints().at(i).getY() + (15 * sin(img2.getPoints().at(i).getAngle() * M_PI / 180.0)) );
+        //painter.drawText(img2.getPoints().at(i).getX() + qIamqe1.width(), img2.getPoints().at(i).getY() + 15, QString::number(img2.getPoints().at(i).getAngle()));
     }
 
     //Поиск
@@ -246,7 +259,7 @@ void lab5() {
 
     painter.end();
 
-    image.save("D:\\combo1.jpg");
+    image.save("D:\\result.jpg");
      printf("\nEXIT");
 
 
@@ -254,7 +267,7 @@ void lab5() {
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QApplication a(argc, argv);
     lab5();
     return a.exec();
 }
