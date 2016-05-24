@@ -6,7 +6,7 @@ PyramidLevel::PyramidLevel(const Image &inputImage, double levelSigma, int level
     sigma = levelSigma;
 }
 
-Image PyramidLevel::getImage() const {
+Image &PyramidLevel::getImage() {
     return image;
 }
 
@@ -16,5 +16,13 @@ int PyramidLevel::getNumber() const {
 
 double PyramidLevel::getSigma() const {
     return sigma;
+}
+
+void PyramidLevel::setImageValue(int i,double value) {
+    image.setPixel(i, value);
+}
+
+void PyramidLevel::setImage(Image inputImage) {
+    image.copy(inputImage);
 }
 

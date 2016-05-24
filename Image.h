@@ -20,6 +20,10 @@ private:
     std::vector<IntrestingPoint> points;            //Интересные точки
     int height;                                    //высота
     int width;                                     //ширина
+    double minOrig = 300;
+    double maxOrig = -300;
+    double min = 300;
+    double max = -300;
 
     QImage::Format format_ = QImage::Format_RGB32;  //формат  изображения
 
@@ -37,6 +41,9 @@ public:
 
     void setPixel(int x, int y, double bright);
     double getPixel(int x, int y) const;
+
+    void setPixel(int i, double bright);
+    double getPixel(int i) const;
 
     double toMono(QRgb color);                      //Преобразование в Ч/Б
 
@@ -66,5 +73,11 @@ public:
 
     QImage getInputImage();
 
+    Image convolution(const double *row, const double *column, int u, int v) const;
+
+    double HarrisForPoint(IntrestingPoint point);
+    double convolutionForPoint(const double *kernel, int x, int y) const;
+
+//    std::unique_ptr<double[]> getPixels() ;
 };
 #endif // IMAGE_H

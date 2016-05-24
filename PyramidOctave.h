@@ -11,9 +11,10 @@ private:
 public:
     PyramidOctave(int num);
     void addLevel(PyramidLevel &level);
-    PyramidLevel getLevel(int i) const;
+    PyramidLevel &getLevel(int i);
     int getNumber() const;
     int getLevelsCount() const;
+    std::vector<PyramidLevel> getLevels() const;
 };
 
 #endif // PYRAMIDOCTAVE_H

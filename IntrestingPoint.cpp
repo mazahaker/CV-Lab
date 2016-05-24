@@ -5,6 +5,10 @@ IntrestingPoint::IntrestingPoint() {
     y = 0;
     value = 0.0;
     angle = 0.0;
+    sigma = -1;
+    octave = -1;
+    level = -1;
+    radius = 0;
 }
 
 IntrestingPoint::IntrestingPoint(int inputX, int inputY, double inputValue)
@@ -13,6 +17,17 @@ IntrestingPoint::IntrestingPoint(int inputX, int inputY, double inputValue)
     y = inputY;
     value = inputValue;
     angle = 0.0;
+}
+
+IntrestingPoint::IntrestingPoint(int inputX, int inputY, double inputValue, int inputOctave, int inputLevel, double inputSigma, double inputRadius) {
+    x = inputX;
+    y = inputY;
+    value = inputValue;
+    angle = 0.0;
+    octave = inputOctave;
+    level = inputLevel;
+    sigma = inputSigma;
+    radius = inputRadius;
 }
 
 int IntrestingPoint::getX() const {
@@ -49,4 +64,18 @@ double IntrestingPoint::getDistance(IntrestingPoint point) const {
 
 double IntrestingPoint::getAngle() const {
     return angle;
+}
+int IntrestingPoint::getOctave() const {
+    return octave;
+}
+int IntrestingPoint::getLevel() const {
+    return level;
+}
+
+double IntrestingPoint::getRadius() const {
+    return radius;
+}
+
+double IntrestingPoint::getSigma() const {
+    return sigma;
 }

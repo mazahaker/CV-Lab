@@ -21,7 +21,7 @@ DescriptorConstructor::DescriptorConstructor(Image& inputImage)
 //            printf("%lf\n", directionFi.getPixel(x,y));
 //        }
 //    }
-    printf("Desc created\n");
+    //printf("Desc created\n");
 }
 
 Descriptor DescriptorConstructor::createDescriptor(const IntrestingPoint inputPoint) {
@@ -31,6 +31,8 @@ Descriptor DescriptorConstructor::createDescriptor(const IntrestingPoint inputPo
     int partsCount = 4;
 
     double descriptorRadius = 8.0;
+
+    descriptorRadius *= inputPoint.getSigma();
 
     for(int i = -descriptorRadius; i < descriptorRadius; i++){
         for(int j = -descriptorRadius; j < descriptorRadius; j++){
@@ -59,28 +61,65 @@ Descriptor DescriptorConstructor::createDescriptor(const IntrestingPoint inputPo
                 localPfi = (localPfi > 360) ? localPfi-360 : localPfi;
 
                 //Текущий х у
-                int x = angledX / ((descriptorRadius * 2) / partsCount);
-                int y = angledY / ((descriptorRadius * 2) / partsCount);
+                int x = angledX / ((descriptorRadius * 2) / partsCount) -0.5;
+                int y = angledY / ((descriptorRadius * 2) / partsCount) -0.5;
 
                 //Номер гистограммы
                 int histogramNumber = x * partsCount + y;
                 //Номер корзины
                 int binNumber = (localPfi / binSize + 0.5);
 
-                //Раскидываем по корзинам
-                double localBinCenter = (double)binNumber * binSize + binSize / 2.0;
+//                //Раскидываем по корзинам
+//                double localBinCenter = (double)binNumber * binSize + binSize / 2.0;
 
-                int relatedBin;
-                if(localPfi < localBinCenter)
-                    relatedBin = binNumber - 1;
-                else
-                    relatedBin = binNumber + 1;
+//                int relatedBin;
+//                if(localPfi < localBinCenter)
+//                    relatedBin = binNumber - 1;
+//                else
+//                    relatedBin = binNumber + 1;
 
-                double thisCenterDistance = abs(localBinCenter - localPfi);
-                double relatedCenterDistance = binSize - thisCenterDistance;
+//                double thisCenterDistance = abs(localBinCenter - localPfi);
+//                double relatedCenterDistance = binSize - thisCenterDistance;
 
-                resultDescriptor.addHistValue(histogramNumber, binNumber,  level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) * (1 - thisCenterDistance / binSize));
-                resultDescriptor.addHistValue(histogramNumber, relatedBin, level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) * (1 - relatedCenterDistance / binSize));
+//                resultDescriptor.addHistValue(histogramNumber, binNumber,  level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) * (1 - thisCenterDistance / binSize));
+//                resultDescriptor.addHistValue(histogramNumber, relatedBin, level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) * (1 - relatedCenterDistance / binSize));
+
+
+                /////////////////
+               //    Lab_7    //
+              /////////////////
+                double localL = level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j);
+                for(int xx = x; xx <= x+1; xx++){
+
+                    if(xx < 0 || xx >= partsCount) continue;
+                    double xCenter = descriptorRadius/2 * xx + descriptorRadius / 4;
+                    double Lx = abs(angledX - xCenter);
+                    double Wx = 1 - Lx / (descriptorRadius/2);
+                    if(xx == 0 && xCenter > angledX || xx == 3 && xCenter < angledX ) {
+                        Wx = 1;
+                    }
+
+                    for(int yy = y; yy <= y+1; yy++){
+
+                        if(yy < 0 || yy >= partsCount) continue;
+                        double yCenter = descriptorRadius/2 * yy + descriptorRadius / 4;
+                        double Ly = abs(angledX - yCenter);
+                        double Wy = 1 - Ly / (descriptorRadius/2);
+                        if(yy == 0 && yCenter > angledY || yy == 3 && yCenter < angledY ) {
+                            Wy = 1;
+                        }
+
+                        for(int bins = binNumber - 1; bins <= binNumber; bins ++){
+
+                            double localBinCenter = (double)bins * binSize + binSize / 2.0;
+                            double La = abs(localBinCenter - localPfi);
+                            double Wa = 1 - La / binSize;
+
+                            histogramNumber = xx * partsCount + yy;
+                            resultDescriptor.addHistValue(histogramNumber, binNumber, localL * Wx * Wy * Wa);
+                        }
+                    }
+                }
             }
         }
     }
@@ -97,6 +136,7 @@ std::vector<IntrestingPoint> DescriptorConstructor::orientPoints(std::vector<Int
         const int localBinCount = 72;
         double localBinSize = 360.0 / localBinCount;
         int radius = 8;
+        radius *= inputPoints.at(index).getSigma();
 
         double localBin[localBinCount];
         std::fill(std::begin (localBin), std::end (localBin), 0);

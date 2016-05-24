@@ -9,9 +9,9 @@ void PyramidOctave::addLevel(PyramidLevel &level) {
     levels.push_back(level);
 }
 
-PyramidLevel PyramidOctave::getLevel(int i) const {
+PyramidLevel &PyramidOctave::getLevel(int i)  {
     if(levels.size() > i) {
-        return levels.at(i);
+        return levels[i];
     }
 }
 
@@ -21,5 +21,9 @@ int PyramidOctave::getNumber() const {
 
 int PyramidOctave::getLevelsCount() const {
     return levels.size();
+}
+
+std::vector<PyramidLevel> PyramidOctave::getLevels() const{
+    return levels;
 }
 

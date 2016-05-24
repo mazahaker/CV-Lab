@@ -26,7 +26,7 @@ void lab1() {
 
 void lab2() {
     Image resultImage("D:\\KazakovImages\\input\\3.jpg");
-    Pyramid pyramid(resultImage, 1.6, 5, 5);
+    Pyramid pyramid(resultImage, 1.0, 5, 5);
     pyramid.pyramidSave("D:\\KazakovImages\\output\\");
 }
 
@@ -134,7 +134,7 @@ void lab4() {
 }
 
 void lab5() {
-    Image img1("D:\\KazakovImages\\input\\k1.jpg");
+    Image img1("D:\\KazakovImages\\input\\z11.jpg");
     img1.haris(4);
     img1.setPoints(ImageUtils::ANMS(img1.getPoints(), 500));
     DescriptorConstructor constructor1(img1);
@@ -145,7 +145,7 @@ void lab5() {
         descriptors1.push_back(constructor1.createDescriptor(img1.getPoints().at(i)));
     }
 
-    Image img2("D:\\KazakovImages\\input\\k1_180.jpg");
+    Image img2("D:\\KazakovImages\\input\\z22_130.jpg");
     img2.haris(4);
     img2.setPoints(ImageUtils::ANMS(img2.getPoints(), 500));
     DescriptorConstructor constructor2(img2);
@@ -260,10 +260,184 @@ void lab5() {
 
 }
 
+
+void lab6() {
+    Image img1("D:\\KazakovImages\\input\\z2.jpg");
+    Pyramid firstPyramid(img1, 1.6, 5, 8);
+    //firstPyramid.pyramidSave("D:\\KazakovImages\\output\\");
+    firstPyramid.createBlobs();
+    std::vector<Descriptor> descriptors1;
+    printf("Find process...\n");
+    for(int i = 0; i < firstPyramid.getOctavesCount(); i++)
+    {
+        for(int j = 0; j < firstPyramid.getOctave(i).getLevelsCount(); j++){
+            Image img(firstPyramid.getOctave(i).getLevel(j).getImage());
+            DescriptorConstructor constructor1(img);  //фабрика для уровня и октавы
+            firstPyramid.getOctave(i).getLevel(j).getImage().setPoints(constructor1.orientPoints(firstPyramid.getOctave(i).getLevel(j).getImage().getPoints()));
+            for(int k = 0; k < firstPyramid.getOctave(i).getLevel(j).getImage().getPoints().size(); k++){
+                descriptors1.push_back(constructor1.createDescriptor(firstPyramid.getOctave(i).getLevel(j).getImage().getPoints().at(k)));
+                //printf("POINT\n");
+            }
+        }
+    }
+    printf("Find process...\n");
+
+    Image img2("D:\\KazakovImages\\input\\z2_130s.jpg");
+    Pyramid secondPyramid(img2, 1.6, 5, 8);
+    secondPyramid.createBlobs();
+    std::vector<Descriptor> descriptors2;
+
+    for(int i = 0; i < secondPyramid.getOctavesCount(); i++)
+    {
+        for(int j = 0; j < secondPyramid.getOctave(i).getLevelsCount(); j++){
+            Image img(secondPyramid.getOctave(i).getLevel(j).getImage());
+            DescriptorConstructor constructor2(img);  //фабрика для уровня и октавы
+            secondPyramid.getOctave(i).getLevel(j).getImage().setPoints(constructor2.orientPoints(secondPyramid.getOctave(i).getLevel(j).getImage().getPoints()));
+            for(int k = 0; k < secondPyramid.getOctave(i).getLevel(j).getImage().getPoints().size(); k++){
+                descriptors2.push_back(constructor2.createDescriptor(secondPyramid.getOctave(i).getLevel(j).getImage().getPoints().at(k)));
+                //printf("POINT\n");
+            }
+        }
+    }
+    printf("Find process...\n");
+
+
+    QImage qIamqe1 = ImageUtils::normalize(img1).getInputImage();
+    QImage qIamqe2 = ImageUtils::normalize(img2).getInputImage();
+    int height = (qIamqe1.height() > qIamqe2.height()) ? qIamqe1.height() : qIamqe2.height();
+    QImage image( qIamqe1.width() + qIamqe2.width(), height, img1.getInputImage().format() );
+
+    QPainter painter;
+    painter.begin(&image);
+
+    QFont font = QApplication::font();
+    font.setPixelSize(10);
+    font.setBold(false);
+    painter.setFont( font );
+
+    painter.drawImage(QPoint(0,0), qIamqe1);
+    painter.drawImage(QPoint(qIamqe1.width(),0), qIamqe2);
+
+//    printf("SIZE1 %d\n\n", descriptors1.size());
+//    for(int i = 0; i < descriptors1.size(); i++){
+//        int x = descriptors1.at(i).getIntrestingPoint().getX();
+//        int y = descriptors1.at(i).getIntrestingPoint().getY();
+//        double r1 = descriptors1.at(i).getIntrestingPoint().getRadius();
+//        x *= pow(2, descriptors1.at(i).getIntrestingPoint().getOctave());
+//        y *= pow(2, descriptors1.at(i).getIntrestingPoint().getOctave());
+//        painter.setPen(QColor(rand()%255, rand()%255, rand()%255, 255));
+//        painter.drawEllipse(x - r1, y - r1, r1*2, r1*2);
+//        painter.drawEllipse(x - r1, y - r1, r1*2, r1*2);
+//        painter.drawLine(
+//                    x,
+//                    y,
+//                    x + (r1 * cos(descriptors1.at(i).getIntrestingPoint().getAngle() * M_PI / 180.0)),
+//                    y + (r1 * sin(descriptors1.at(i).getIntrestingPoint().getAngle() * M_PI / 180.0)) );
+//        //painter.drawText(img1.getPoints().at(i).getX(), img1.getPoints().at(i).getY() + 15, QString::number(img1.getPoints().at(i).getAngle()));
+//    }
+//    printf("SIZE2 %d\n\n", descriptors2.size());
+//    for(int i = 0; i < descriptors2.size(); i++){
+//        int x = descriptors2.at(i).getIntrestingPoint().getX();
+//        int y = descriptors2.at(i).getIntrestingPoint().getY();
+//        double r2 = descriptors2.at(i).getIntrestingPoint().getRadius();
+//        x *= pow(2, descriptors2.at(i).getIntrestingPoint().getOctave());
+//        x+= qIamqe1.width();
+//        y *= pow(2, descriptors2.at(i).getIntrestingPoint().getOctave());
+//        painter.setPen(QColor(rand()%255, rand()%255, rand()%255, 255));
+//        painter.drawEllipse(x - r2, y - r2, r2*2, r2*2);
+//        painter.drawEllipse(x - r2, y - r2, r2*2, r2*2);
+//        painter.drawLine(
+//                    x,
+//                    y,
+//                    x + (r2 * cos(descriptors2.at(i).getIntrestingPoint().getAngle() * M_PI / 180.0)),
+//                    y + (r2 * sin(descriptors2.at(i).getIntrestingPoint().getAngle() * M_PI / 180.0)));
+//        //painter.drawText(img2.getPoints().at(i).getX() + qIamqe1.width(), img2.getPoints().at(i).getY() + 15, QString::number(img2.getPoints().at(i).getAngle()));
+//    }
+
+    //Поиск
+    int findCount = 0;
+    for(int i = 0; i < descriptors1.size(); i++){
+        double firstMinValue = 10000;
+        int firstMinValueIndex = 10000;
+        double secondMinValue = 10000;
+        int secondMinValueIndex = 10000;
+
+        for(int j = 0; j < descriptors2.size(); j++){
+            double dist = descriptors1.at(i).getDistance(descriptors2.at(j));
+            if(dist < firstMinValue){
+                secondMinValue = firstMinValue;
+                secondMinValueIndex = firstMinValueIndex;
+
+                firstMinValue = dist;
+                firstMinValueIndex = j;
+            } else {
+                if(dist < secondMinValue){
+                    secondMinValue = dist;
+                    secondMinValueIndex = j;
+                }
+            }
+        }
+
+        if(firstMinValue / secondMinValue < 0.8){
+            findCount++;
+            QPen pen(QColor(rand()%255 ,rand()%255, rand()%255));
+            painter.setPen(pen);
+
+            int x1 = descriptors1.at(i).getIntrestingPoint().getX();
+            int y1 = descriptors1.at(i).getIntrestingPoint().getY();
+            double r1 = descriptors1.at(i).getIntrestingPoint().getRadius();
+            //printf("R1 %lf\n", r1);
+            x1 *= pow(2, descriptors1.at(i).getIntrestingPoint().getOctave());
+            y1 *= pow(2, descriptors1.at(i).getIntrestingPoint().getOctave());
+
+            int x2 = descriptors2.at(firstMinValueIndex).getIntrestingPoint().getX();
+            int y2 = descriptors2.at(firstMinValueIndex).getIntrestingPoint().getY();
+            double r2 = descriptors2.at(firstMinValueIndex).getIntrestingPoint().getRadius();
+            //printf("R2 %lf\n", r2);
+            x2 *= pow(2, descriptors2.at(firstMinValueIndex).getIntrestingPoint().getOctave());
+            y2 *= pow(2, descriptors2.at(firstMinValueIndex).getIntrestingPoint().getOctave());
+            x2+= qIamqe1.width();
+
+            painter.drawEllipse(x1 - r1, y1 - r1, r1*2, r1*2);
+            //painter.drawEllipse(x1 - 7, y1 - 7, 14, 14);
+            painter.drawLine(
+                        x1,
+                        y1,
+                        x1 + (15 * cos(descriptors1.at(i).getIntrestingPoint().getAngle() * M_PI / 180.0)),
+                        y1 + (15 * sin(descriptors1.at(i).getIntrestingPoint().getAngle() * M_PI / 180.0))
+                        );
+
+            painter.drawEllipse(x2 - r2, y2 - r2, r2*2, r2*2);
+            //painter.drawEllipse(x2 - 7, y2 - 7, 14, 14);
+            painter.drawLine(
+                        x2,
+                        y2,
+                        x2 + (15 * cos(descriptors2.at(firstMinValueIndex).getIntrestingPoint().getAngle() * M_PI / 180.0)),
+                        y2 + (15 * sin(descriptors2.at(firstMinValueIndex).getIntrestingPoint().getAngle() * M_PI / 180.0))
+                        );
+
+            painter.drawLine(
+                        QPoint(x1,
+                               y1),
+                        QPoint(x2,
+                               y2)
+                        );
+        }
+    }
+
+    painter.end();
+////    double percent = (((double) findCount / ((descriptors1.size() + descriptors2.size())/2))*100);
+////    printf("FINDED DESCRIPTORS: %lf percent\n", percent);
+     image.save("D:\\result.jpg");
+     printf("EXIT\n");
+
+
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    lab5();
+    lab6();
     return a.exec();
 }
 

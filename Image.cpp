@@ -17,9 +17,33 @@ Image::Image(QString path)
 
         for(int x = 0; x < getWidth(); x++){
             for(int y = 0; y < getHeight(); y++){
-                setPixel(x,y,toMono(Picture.pixel(x,y))/256);
+                setPixel(x,y,toMono(Picture.pixel(x,y)));
             }
         }
+
+
+
+        for(int x = 0; x < getWidth(); x++){
+            for(int y = 0; y < getHeight(); y++){
+                if(getPixel(x,y) > maxOrig) {
+                    maxOrig = getPixel(x,y);
+                }
+                if(getPixel(x,y) < minOrig) {
+                    minOrig = getPixel(x,y);
+                }
+                setPixel(x,y, getPixel(x,y)/255);
+//                if(getPixel(x,y) > max) {
+//                    max = getPixel(x,y);
+//                }
+//                if(getPixel(x,y) < min) {
+//                    min = getPixel(x,y);
+//                }
+            }
+        }
+
+        printf("min %lf max %lf minOr %lf maxOr %lf\n\n", min,max,minOrig,maxOrig);
+
+
         printf("Image load! (%d x %d)\n",getWidth(), getHeight());
     } else {
         printf("Image not load!\n");
@@ -79,16 +103,42 @@ void Image::setPixel(int x, int y, double bright) {
     Image_[arrayIndex(x,y,width,height)] = bright;
 }
 
+void Image::setPixel(int i, double bright) {
+    Image_[i] = bright;
+}
+
 double Image::getPixel(int x, int y) const {
     return Image_[arrayIndex(x,y,width,height)];
 }
 
+double Image::getPixel(int i) const {
+    return Image_[i];
+}
+
+//std::unique_ptr<double[]> Image::getPixels()  {
+//    return Image_;
+//}
+
 void Image::saveImage(QString file, QString message) {
     QImage picture(getWidth(),getHeight(),format_);
     double currentBright;
+    minOrig = 0;
+    maxOrig = 255;
+    max = -300;
+    min = 300;
+    for(int x = 0; x < getWidth(); x++){
+        for(int y = 0; y < getHeight(); y++){
+            if(getPixel(x,y) > max) {
+                max = getPixel(x,y);
+            }
+            if(getPixel(x,y) < min) {
+                min = getPixel(x,y);
+            }
+        }
+    }
     for(int y = 0; y < getHeight(); y++){
         for(int x = 0; x < getWidth(); x++){
-            currentBright = getPixel(x, y) * 256;
+            currentBright = ((getPixel(x, y) - min)/(max-min)) * (maxOrig - minOrig);
             picture.setPixel(x, y, qRgb(currentBright, currentBright, currentBright));
         }
     }
@@ -151,6 +201,51 @@ Image Image::convolution(const double *kernel, int x_size, int y_size) const {
     return resultImage;
 }
 
+//Image Image::convolution(const double *row, const double *column, int x_size, int y_size) const {
+//    Image resultImage = *this;
+
+//    int x0, x1, y0, y1, n;
+//    double resultPixel = 0.0;
+
+//    for(int i = 0; i < getWidth(); i++){
+//        for(int j = 0; j < getHeight(); j++) {
+//            x0 = i - (x_size / 2);
+//            x1 = i + (x_size / 2);
+//            y0 = j - (y_size / 2);
+//            y1 = j + (y_size / 2);
+
+
+//            std::vector<double> temp;
+//            for(int xi = x0, n=0; xi <= x1; xi++, n=0){
+//                resultPixel = 0.0;
+//                for(int yj = y0; yj <= y1; yj++, n++){
+//                    resultPixel += (row[n] * getPixel(xi,yj));
+//                }
+//                temp.push_back(resultPixel);
+//            }
+//            resultPixel = 0.0;
+//            for(int yi = 0; yi < y_size; yi++){
+//                resultPixel+=column[yi] * temp.at(yi);
+//            }
+
+//            resultImage.setPixel(i,j,resultPixel);
+
+//        }
+//    }
+
+//    return resultImage;
+//}
+
+Image Image::convolution(const double *row, const double *column, int u, int v) const
+{
+    return this->convolution(row, u, 1).convolution(column, 1, v);
+//    Image resultImage1(getWidth(), getHeight());
+//    Image resultImage2(getWidth(), getHeight());
+//    resultImage1.copy(convolution(row, u, 1));
+//    resultImage2.copy(resultImage1.convolution(column, 1, v));
+//    return resultImage2;
+}
+
 Image Image::sobelGradient(const Image &xSobel, const Image &ySobel) const
 {
     Image resultImage(getWidth(), getHeight());
@@ -203,19 +298,43 @@ Image Image::gaussFilter(double sigma) {
 
         printf("Gaus kernel size = %d, Sigma = %f\n", kernelSize, sigma);
         double kernel[kernelSize][kernelSize];
+        double kernelRow[kernelSize];
+        double kernelColumn[kernelSize];
         double sum = 0;
 
         for(int x = 0, x_g = - kernelSize / 2; x < kernelSize; x ++, x_g++) {
             for(int y = 0, y_g = - kernelSize / 2; y < kernelSize; y ++, y_g++) {
                 kernel[x][y] = pow(M_E, (-(x_g * x_g + y_g * y_g) / (2.0 * (sigma * sigma)))) * (1.0 / (2.0 * M_PI * (sigma * sigma)));
-                printf("%f ", kernel[x][y]);
+                //printf("%f ", kernel[x][y]);
                 sum+=kernel[x][y];
             }
-            printf("\n");
+            //printf("\n");
         }
         printf("Kernel summ = %f \n\n", sum);
 
+        sum = 0;
+        for(int x = 0, x_g = - kernelSize / 2; x < kernelSize; x ++, x_g++) {
+            kernelRow[x] = pow(M_E, (-((pow(x_g,2)) / (2.0 * (pow(sigma,2)))))) / sqrt(2.0 * M_PI * sigma);
+            kernelColumn[x] = kernelRow[x];
+            //printf("%f ", kernelColumn[x]);
+            sum+=kernelColumn[x];
+            //printf("\n");
+        }
+        //printf("Kernel summ1 = %f \n\n", sum);
+
+        //TODO
+        if(sum!= 1.0) {
+            for(int x = 0; x < kernelSize; x ++) {
+                kernelColumn[x] += (1-sum)/kernelSize;
+                kernelRow[x] += (1-sum)/kernelSize;
+                printf("%f ", kernelColumn[x]);
+            }
+        }
+
+
+
         return convolution(&kernel[0][0], kernelSize, kernelSize);
+        //return convolution(&kernelRow[0], &kernelColumn[0], kernelSize, kernelSize);
     }
     return *this;
 }
@@ -364,11 +483,49 @@ void Image::haris(double T) {
     printf("Haris end\n");
 }
 
+double Image::HarrisForPoint(IntrestingPoint point)
+{
+    int _dx = 3, _dy = 3;
+    double k = 0.06;
+    double a = 0, b = 0, c = 0;
+    double Ix, Iy;
+
+    for(int dx = -_dx; dx < _dx; dx++){
+        for(int dy = -_dy; dy < _dy; dy++){
+
+            Ix = convolutionForPoint(&sobelX[0][0], point.getX() + dx, point.getY() + dy);
+            Iy = convolutionForPoint(&sobelY[0][0], point.getX() + dx, point.getY() + dy);
+
+            a += Ix * Ix;
+            b += Ix * Iy;
+            c += Iy * Iy;
+        }
+    }
+
+    double det = a * c - b * b;
+    double trace = a + c;
+    double f = det - k * trace * trace;
+
+    return f;
+}
+
+double Image::convolutionForPoint(const double *kernel, int x, int y) const
+{
+    double result = 0;
+    int n = 8;
+    for(int i = -1 ; i <= 1; i++) {
+        for(int j = -1; j <= 1; j++, n--){
+            result += (kernel[n] * getPixel(x + i, y + j));
+        }
+    }
+    return result;
+}
+
 QImage Image::getInputImage() {
     QImage image(getWidth(),getHeight(),format_);
     for(int y = 0; y < getHeight(); y++){
         for(int x = 0; x < getWidth(); x++){
-            double currentBright = getPixel(x, y) * 256;
+            double currentBright = getPixel(x, y) * 255;
             image.setPixel(x, y, qRgb(currentBright, currentBright, currentBright));
         }
     }

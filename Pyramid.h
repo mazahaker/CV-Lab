@@ -9,8 +9,10 @@ private:
 public:
     Pyramid(const Image& inputImage, const double startSigma , const int octaveCount, const double levelCount);
     void addOctave(PyramidOctave &octave);
-    PyramidOctave getOctave(int i) const;
+    PyramidOctave &getOctave(int i);
     void pyramidSave(QString path);
+    void createBlobs();
+    int getOctavesCount();
 };
 
 #endif // PYRAMID_H
