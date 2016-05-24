@@ -294,7 +294,7 @@ std::vector<IntrestingPoint> Image::getPoints() {
 
 Image Image::gaussFilter(double sigma) {
     if(sigma != 1.0) {
-        int kernelSize = ceil(3 * sigma) * 2 + 1;
+        int kernelSize = ceil(3 * sigma) * 4 + 1;
 
         printf("Gaus kernel size = %d, Sigma = %f\n", kernelSize, sigma);
         double kernel[kernelSize][kernelSize];
