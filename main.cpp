@@ -262,7 +262,7 @@ void lab5() {
 
 
 void lab6() {
-    Image img1("D:\\KazakovImages\\input\\z2.jpg");
+    Image img1("D:\\KazakovImages\\input\\m3.jpg");
     Pyramid firstPyramid(img1, 1.6, 5, 8);
     //firstPyramid.pyramidSave("D:\\KazakovImages\\output\\");
     firstPyramid.createBlobs();
@@ -282,7 +282,7 @@ void lab6() {
     }
     printf("Find process...\n");
 
-    Image img2("D:\\KazakovImages\\input\\z2_130s.jpg");
+    Image img2("D:\\KazakovImages\\input\\m2.jpg");
     Pyramid secondPyramid(img2, 1.6, 5, 8);
     secondPyramid.createBlobs();
     std::vector<Descriptor> descriptors2;

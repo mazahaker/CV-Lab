@@ -154,9 +154,9 @@ void Pyramid::createBlobs() {
                                     sqrt(2)*(octaves.at(octaveIndex).getLevel(firstLevelIndex).getSigma() * (double)pow(2,octaveIndex))
                                     );
 
-                        double harris = octaves.at(octaveIndex).getLevel(firstLevelIndex).getImage().HarrisForPoint(blob);
+                        double harris = octaves.at(octaveIndex).getLevel(firstLevelIndex).getImage().harrisForPoint(blob);
 
-                        if(fabs(harris) > 1e-8){
+                        if(fabs(harris) > 1e-6){
                             blobs.push_back(blob);
                         }
                     }

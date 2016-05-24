@@ -85,38 +85,36 @@ Descriptor DescriptorConstructor::createDescriptor(const IntrestingPoint inputPo
 //                resultDescriptor.addHistValue(histogramNumber, relatedBin, level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) * (1 - relatedCenterDistance / binSize));
 
 
-                /////////////////
-               //    Lab_7    //
-              /////////////////
-                double localL = level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j);
+////////////////////////lab7
+                double currentLevel = level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j);
                 for(int xx = x; xx <= x+1; xx++){
 
                     if(xx < 0 || xx >= partsCount) continue;
                     double xCenter = descriptorRadius/2 * xx + descriptorRadius / 4;
-                    double Lx = abs(angledX - xCenter);
-                    double Wx = 1 - Lx / (descriptorRadius/2);
+                    double leightX = abs(angledX - xCenter);
+                    double weightX = 1 - leightX / (descriptorRadius/2);
                     if(xx == 0 && xCenter > angledX || xx == 3 && xCenter < angledX ) {
-                        Wx = 1;
+                        weightX = 1;
                     }
 
                     for(int yy = y; yy <= y+1; yy++){
 
                         if(yy < 0 || yy >= partsCount) continue;
                         double yCenter = descriptorRadius/2 * yy + descriptorRadius / 4;
-                        double Ly = abs(angledX - yCenter);
-                        double Wy = 1 - Ly / (descriptorRadius/2);
+                        double leightY = abs(angledX - yCenter);
+                        double weightY = 1 - leightY / (descriptorRadius/2);
                         if(yy == 0 && yCenter > angledY || yy == 3 && yCenter < angledY ) {
-                            Wy = 1;
+                            weightY = 1;
                         }
 
-                        for(int bins = binNumber - 1; bins <= binNumber; bins ++){
+                        for(int currentBin = binNumber - 1; currentBin <= binNumber; currentBin ++){
 
-                            double localBinCenter = (double)bins * binSize + binSize / 2.0;
-                            double La = abs(localBinCenter - localPfi);
-                            double Wa = 1 - La / binSize;
+                            double localBinCenter = (double)currentBin * binSize + binSize / 2.0;
+                            double leight = abs(localBinCenter - localPfi);
+                            double weight = 1 - leight / binSize;
 
                             histogramNumber = xx * partsCount + yy;
-                            resultDescriptor.addHistValue(histogramNumber, binNumber, localL * Wx * Wy * Wa);
+                            resultDescriptor.addHistValue(histogramNumber, binNumber, currentLevel * weightX * weightY * weight);
                         }
                     }
                 }
@@ -133,7 +131,7 @@ std::vector<IntrestingPoint> DescriptorConstructor::orientPoints(std::vector<Int
     std::vector<IntrestingPoint> orientPoints;
 
     for(int index = 0; index < inputPoints.size(); index++) {
-        const int localBinCount = 72;
+        const int localBinCount = 36;
         double localBinSize = 360.0 / localBinCount;
         int radius = 8;
         radius *= inputPoints.at(index).getSigma();

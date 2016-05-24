@@ -75,7 +75,7 @@ public:
 
     Image convolution(const double *row, const double *column, int u, int v) const;
 
-    double HarrisForPoint(IntrestingPoint point);
+    double harrisForPoint(IntrestingPoint point);
     double convolutionForPoint(const double *kernel, int x, int y) const;
 
 //    std::unique_ptr<double[]> getPixels() ;

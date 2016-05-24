@@ -483,7 +483,7 @@ void Image::haris(double T) {
     printf("Haris end\n");
 }
 
-double Image::HarrisForPoint(IntrestingPoint point)
+double Image::harrisForPoint(IntrestingPoint point)
 {
     int _dx = 3, _dy = 3;
     double k = 0.06;
