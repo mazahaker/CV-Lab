@@ -41,7 +41,7 @@ Image::Image(QString path)
             }
         }
 
-        printf("min %lf max %lf minOr %lf maxOr %lf\n\n", min,max,minOrig,maxOrig);
+       // printf("min %lf max %lf minOr %lf maxOr %lf\n\n", min,max,minOrig,maxOrig);
 
 
         printf("Image load! (%d x %d)\n",getWidth(), getHeight());
@@ -296,7 +296,7 @@ Image Image::gaussFilter(double sigma) {
     if(sigma != 1.0) {
         int kernelSize = ceil(3 * sigma) * 4 + 1;
 
-        printf("Gaus kernel size = %d, Sigma = %f\n", kernelSize, sigma);
+        //printf("Gaus kernel size = %d, Sigma = %f\n", kernelSize, sigma);
         double kernel[kernelSize][kernelSize];
         double kernelRow[kernelSize];
         double kernelColumn[kernelSize];
@@ -310,7 +310,7 @@ Image Image::gaussFilter(double sigma) {
             }
             //printf("\n");
         }
-        printf("Kernel summ = %f \n\n", sum);
+        //printf("Kernel summ = %f \n\n", sum);
 
         sum = 0;
         for(int x = 0, x_g = - kernelSize / 2; x < kernelSize; x ++, x_g++) {
@@ -327,7 +327,7 @@ Image Image::gaussFilter(double sigma) {
             for(int x = 0; x < kernelSize; x ++) {
                 kernelColumn[x] += (1-sum)/kernelSize;
                 kernelRow[x] += (1-sum)/kernelSize;
-                printf("%f ", kernelColumn[x]);
+                //printf("%f ", kernelColumn[x]);
             }
         }
 

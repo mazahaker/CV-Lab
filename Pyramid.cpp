@@ -1,4 +1,5 @@
 #include "Pyramid.h"
+#include "math.h"
 
 Pyramid::Pyramid(const Image &inputImage, const double inputSigma, const int octaveCount, const double levelCount)
 {
@@ -7,7 +8,9 @@ Pyramid::Pyramid(const Image &inputImage, const double inputSigma, const int oct
     double levelSigma = inputSigma;
     Image internalImage = levelImage.gaussFilter(sqrt(inputSigma * inputSigma - 0.5 * 0.5));
 
-    for(int octaveNumber = 0; octaveNumber < octaveCount; octaveNumber++) {
+    int octavsCount = log2f(std::min(inputImage.getHeight(),inputImage.getWidth())/50);
+
+    for(int octaveNumber = 0; octaveNumber < octavsCount; octaveNumber++) {
         PyramidOctave octave(octaveNumber);
         levelSigma = inputSigma;
 
@@ -24,7 +27,7 @@ Pyramid::Pyramid(const Image &inputImage, const double inputSigma, const int oct
                 levelSigma = inputSigma * pow(pow(2.0, 1.0 / (levelCount-1)), levelNumber);
                 internalImage.copy(octave.getLevel(levelNumber-1).getImage());
                 tempSigma = sqrt(levelSigma * levelSigma - octave.getLevel(levelNumber-1).getSigma() * octave.getLevel(levelNumber-1).getSigma());
-                printf("temp sigma %lf\n", tempSigma);
+                //printf("temp sigma %lf\n", tempSigma);
                 PyramidLevel level(internalImage.gaussFilter(tempSigma),levelSigma,levelNumber);
                 octave.addLevel(level);
             }
@@ -138,7 +141,7 @@ void Pyramid::createBlobs() {
                     if(temp1.getPixel(x, y-1) <= extremumValue || temp2.getPixel(x, y-1) <= extremumValue || temp3.getPixel(x, y-1) <= extremumValue) {
                         min = false;
                     }
-                    if(temp1.getPixel(x+1, y-1) >= extremumValue || temp2.getPixel(x+1, y-1) >= extremumValue || temp3.getPixel(x+1, y-1) >= extremumValue) {
+                    if(temp1.getPixel(x+1, y-1) <= extremumValue || temp2.getPixel(x+1, y-1) <= extremumValue || temp3.getPixel(x+1, y-1) <= extremumValue) {
                         min = false;
                     }
 
@@ -156,7 +159,7 @@ void Pyramid::createBlobs() {
 
                         double harris = octaves.at(octaveIndex).getLevel(firstLevelIndex).getImage().harrisForPoint(blob);
 
-                        if(fabs(harris) > 1e-6){
+                        if(harris > 0.00001){
                             blobs.push_back(blob);
                         }
                     }

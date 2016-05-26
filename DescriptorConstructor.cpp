@@ -69,20 +69,20 @@ Descriptor DescriptorConstructor::createDescriptor(const IntrestingPoint inputPo
                 //Номер корзины
                 int binNumber = (localPfi / binSize + 0.5);
 
-//                //Раскидываем по корзинам
-//                double localBinCenter = (double)binNumber * binSize + binSize / 2.0;
+                //Раскидываем по корзинам
+                double localBinCenter = (double)binNumber * binSize + binSize / 2.0;
 
-//                int relatedBin;
-//                if(localPfi < localBinCenter)
-//                    relatedBin = binNumber - 1;
-//                else
-//                    relatedBin = binNumber + 1;
+                int relatedBin;
+                if(localPfi < localBinCenter)
+                    relatedBin = binNumber - 1;
+                else
+                    relatedBin = binNumber + 1;
 
-//                double thisCenterDistance = abs(localBinCenter - localPfi);
-//                double relatedCenterDistance = binSize - thisCenterDistance;
+                double thisCenterDistance = abs(localBinCenter - localPfi);
+                double relatedCenterDistance = binSize - thisCenterDistance;
 
-//                resultDescriptor.addHistValue(histogramNumber, binNumber,  level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) * (1 - thisCenterDistance / binSize));
-//                resultDescriptor.addHistValue(histogramNumber, relatedBin, level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) * (1 - relatedCenterDistance / binSize));
+                resultDescriptor.addHistValue(histogramNumber, binNumber,  level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) * (1 - thisCenterDistance / binSize));
+                resultDescriptor.addHistValue(histogramNumber, relatedBin, level.getPixel(inputPoint.getX() + i, inputPoint.getY() + j) * (1 - relatedCenterDistance / binSize));
 
 
 ////////////////////////lab7
